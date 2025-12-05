@@ -28,3 +28,37 @@ Verify Namespace has been Duplicated to all the workload clusters.
 kubectl --context=${K8S_CLUSTER_CONTEXT_1} get ns
 kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
 ```
+
+### SMF Schedule Policy 1: Spread/Duplicate
+
+Spread/Duplicate one instance of SMF on each of the workload clusters.
+
+Create Spread/Duplicate Schedule Policy.
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/smf-spread-duplicate-policy.yaml
+```
+
+You should see the new schedule policy on Nova.
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
+```
+
+Apply SMF manifest.
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ${SMF_YAML}
+```
+
+Label SMF Objects with `app.kubernetes.io/component=smf`.
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label crd ${SMF_CRD} app.kubernetes.io/component=smf
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label deployment ${SMF_DEPLOYMENT} app.kubernetes.io/component=smf
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label clusterrole ${SMF_CLUSTERROLE} app.kubernetes.io/component=smf
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label clusterrolebinding ${SMF_CLUSTERROLEBINDING} app.kubernetes.io/component=smf
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label serviceaccount ${SMF_SERVICEACCOUNT} app.kubernetes.io/component=smf
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label role ${SMF_ROLE} app.kubernetes.io/component=smf
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label rolebinding ${SMF_ROLEBINDING} app.kubernetes.io/component=smf
+...
+```
+
+Wait for one instance of SMF to come up on each of the workload clusters.
+
