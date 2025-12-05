@@ -1,7 +1,7 @@
 # smf-nova
 Deploy SMF to Nova cluster fleet
 
-### Spread/Duplicate Namespace(s)
+### Step 0: Spread/Duplicate Namespace(s)
 
 Set environment variable SMF_REPO_ROOT to the root of this repo.
 ```
@@ -29,7 +29,9 @@ kubectl --context=${K8S_CLUSTER_CONTEXT_1} get ns
 kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
 ```
 
-### Schedule Policy 1: Spread/Duplicate
+### Step 1: Create Schedule Policy
+
+#### Schedule Policy 1: Spread/Duplicate
 
 Run one instance of SMF on every workload cluster in the fleet.
 
@@ -42,6 +44,13 @@ You should see the new schedule policy on Nova.
 ```
 kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 ```
+#### Schedule Policy 2: Schedule SMF to a single workload cluster
+
+#### Schedule Policy 3: Availability-based scheduling
+
+Schedule SMF to any cluster with available resources. SMF will land on one cluster with available resources.
+
+### Step 3: Schedule SMF to Nova
 
 #### If using Helm, add a `commonLabels` `app.kubernetes.io/component=smf`
 
@@ -70,12 +79,14 @@ kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label rolebinding ${SMF_ROLEBINDI
 ...
 ```
 
-Wait for one instance of SMF to come up on each of the workload clusters.
+### Step 4: Verify SMF was scheduled according to Schedule Policy
 
-### Schedule Policy 2: Schedule SMF to a single workload cluster
+#### Schedule Policy 1: Spread/Duplicate
+One instance of SMF should be running on each of the workload clusters.
 
-### Schedule Policy 3: Availability-based scheduling
+#### Schedule Policy 2: Schedule SMF to a single workload cluster
+One instance of SMF should be running on the workload cluster specified in the Schedule Policy.
 
-Schedule SMF to any cluster with available resources. SMF will land on one cluster with available resources.
-
+#### Schedule Policy 3: Availability-based scheduling
+One instance of SMF should be running on one of the clusters with sufficient resources.
 
