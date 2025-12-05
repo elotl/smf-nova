@@ -35,13 +35,23 @@ Pick one of the below Schedule Policies to achieve your desired outcome.
 
 #### Schedule Policy 1: Schedule SMF to a single workload cluster
 
+Schedule SMF to ${NOVA_WORKLOAD_CLUSTER_1}.
+```
+envsubst < ${SMF_REPO_ROOT}/policies/simple-policy.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
+```
+
+You should see the new schedule policy on Nova.
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
+```
+
 #### Schedule Policy 2: Spread/Duplicate
 
 Run one instance of SMF on every workload cluster in the fleet.
 
 Create Spread/Duplicate Schedule Policy.
 ```
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/smf-spread-duplicate-policy.yaml
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/spread-duplicate-policy.yaml
 ```
 
 You should see the new schedule policy on Nova.
