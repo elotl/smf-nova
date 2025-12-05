@@ -84,11 +84,11 @@ kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label rolebinding ${SMF_ROLEBINDI
 
 ### Step 4: Verify SMF was scheduled to the right workload cluster(s) according to Schedule Policy
 
-#### Schedule Policy 1: Spread/Duplicate
-One instance of SMF should be running on each of the workload clusters.
-
-#### Schedule Policy 2: Schedule SMF to a single workload cluster
+#### Schedule Policy 1: Schedule SMF to a single workload cluster
 One instance of SMF should be running on the workload cluster specified in the Schedule Policy.
+
+#### Schedule Policy 2: Spread/Duplicate
+One instance of SMF should be running on each of the workload clusters.
 
 #### Schedule Policy 3: Availability-based scheduling
 One instance of SMF should be running on one of the clusters with sufficient resources.
