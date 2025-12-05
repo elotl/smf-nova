@@ -43,6 +43,16 @@ You should see the new schedule policy on Nova.
 kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 ```
 
+#### If using Helm, add a `commonLabels` `app.kubernetes.io/component=smf`
+
+```
+helm install --kube-context ${NOVA_CONTROLPLANE_CONTEXT} ... --set commonLabels."app\.kubernetes\.io/component"=smf
+```
+
+If `commonLabels` are not supported, please install Helm chart and then `kubectl label` Objects as described below.
+
+#### If using manifest, apply manifest and then label Objects
+
 Apply SMF manifest.
 ```
 kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ${SMF_YAML}
