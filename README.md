@@ -29,9 +29,9 @@ kubectl --context=${K8S_CLUSTER_CONTEXT_1} get ns
 kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
 ```
 
-### SMF Schedule Policy 1: Spread/Duplicate
+### Schedule Policy 1: Spread/Duplicate
 
-Spread/Duplicate one instance of SMF on each of the workload clusters.
+Run one instance of SMF on every workload cluster in the fleet.
 
 Create Spread/Duplicate Schedule Policy.
 ```
