@@ -31,7 +31,11 @@ kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
 
 ### Step 1: Create Schedule Policy
 
-#### Schedule Policy 1: Spread/Duplicate
+Pick of the below Schedule Policies to achieve your desired outcome.
+
+#### Schedule Policy 1: Schedule SMF to a single workload cluster
+
+#### Schedule Policy 2: Spread/Duplicate
 
 Run one instance of SMF on every workload cluster in the fleet.
 
@@ -44,7 +48,6 @@ You should see the new schedule policy on Nova.
 ```
 kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 ```
-#### Schedule Policy 2: Schedule SMF to a single workload cluster
 
 #### Schedule Policy 3: Availability-based scheduling
 
@@ -79,7 +82,7 @@ kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label rolebinding ${SMF_ROLEBINDI
 ...
 ```
 
-### Step 4: Verify SMF was scheduled according to Schedule Policy
+### Step 4: Verify SMF was scheduled to the right workload cluster(s) according to Schedule Policy
 
 #### Schedule Policy 1: Spread/Duplicate
 One instance of SMF should be running on each of the workload clusters.
