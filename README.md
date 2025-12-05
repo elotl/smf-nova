@@ -62,3 +62,10 @@ kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label rolebinding ${SMF_ROLEBINDI
 
 Wait for one instance of SMF to come up on each of the workload clusters.
 
+### Schedule Policy 2: Schedule SMF to a single workload cluster
+
+### Schedule Policy 3: Availability-based scheduling
+
+Schedule SMF to any cluster with available resources. SMF will land on one cluster with available resources.
+
+
