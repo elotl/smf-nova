@@ -31,7 +31,7 @@ kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
 
 ### Step 1: Create Schedule Policy
 
-Pick of the below Schedule Policies to achieve your desired outcome.
+Pick one of the below Schedule Policies to achieve your desired outcome.
 
 #### Schedule Policy 1: Schedule SMF to a single workload cluster
 
