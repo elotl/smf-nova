@@ -29,51 +29,33 @@ kubectl --context=${K8S_CLUSTER_CONTEXT_1} get ns
 kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
 ```
 
-### Step 1: Create Schedule Policy
-
-Pick one of the below Schedule Policies to achieve your desired outcome.
-
-#### Schedule Policy 1: Schedule SMF to a single workload cluster
+### Step 1: Schedule SMF to a single workload cluster
 
 Schedule SMF to ${NOVA_WORKLOAD_CLUSTER_1}.
+
+#### Create a simple Schedule Policy
+
 ```
 envsubst < ${SMF_REPO_ROOT}/policies/simple-policy.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
 ```
 
-You should see the new schedule policy on Nova.
+You should see the new schedule policy `simple-policy` in Nova.
 ```
 kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 ```
 
-#### Schedule Policy 2: Spread/Duplicate
+#### Schedule SMF to Nova
 
-Run one instance of SMF on every workload cluster in the fleet.
+##### If using Helm, add a `commonLabels`
 
-Create Spread/Duplicate Schedule Policy.
-```
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/spread-duplicate-policy.yaml
-```
-
-You should see the new schedule policy on Nova.
-```
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
-```
-
-#### Schedule Policy 3: Availability-based scheduling
-
-Schedule SMF to any cluster with available resources. SMF will land on one cluster with available resources.
-
-### Step 3: Schedule SMF to Nova
-
-#### If using Helm, add a `commonLabels` `app.kubernetes.io/component=smf`
-
+Add `commonLabels` `app.kubernetes.io/component=smf`.
 ```
 helm install --kube-context ${NOVA_CONTROLPLANE_CONTEXT} ... --set commonLabels."app\.kubernetes\.io/component"=smf
 ```
 
 If `commonLabels` are not supported, please install Helm chart and then `kubectl label` Objects as described below.
 
-#### If using manifest, apply manifest and then label Objects
+##### If using manifest, apply manifest and then label Objects
 
 Apply SMF manifest.
 ```
@@ -92,14 +74,45 @@ kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label rolebinding ${SMF_ROLEBINDI
 ...
 ```
 
-### Step 4: Verify SMF was scheduled to the right workload cluster(s) according to Schedule Policy
+### Step 2: Verify SMF is scheduled to the target workload cluster
 
-#### Schedule Policy 1: Schedule SMF to a single workload cluster
-One instance of SMF should be running on the workload cluster specified in the Schedule Policy.
+One unit of SMF should be running on ${NOVA_WORKLOAD_CLUSTER_1}.
 
-#### Schedule Policy 2: Spread/Duplicate
+### Step 3 (Optional): Update Schedule Policy
+
+Edit Schedule Policy to change target cluster from ${NOVA_WORKLOAD_CLUSTER_1} to ${NOVA_WORKLOAD_CLUSTER_2}.
+
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} edit schedulepolicy simple-policy
+```
+
+You should see SMF move from ${NOVA_WORKLOAD_CLUSTER_1} to ${NOVA_WORKLOAD_CLUSTER_2}.
+
+### Step 4: Explore advanced Schedule Policies
+
+#### Spread/Duplicate
+
+Run one instance of SMF on every workload cluster in the fleet.
+
+Create Spread/Duplicate Schedule Policy.
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/spread-duplicate-policy.yaml
+```
+
+You should see the new schedule policy on Nova.
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
+```
 One instance of SMF should be running on each of the workload clusters.
 
-#### Schedule Policy 3: Availability-based scheduling
-One instance of SMF should be running on one of the clusters with sufficient resources.
+#### Availability-based scheduling
 
+Schedule SMF to any cluster with available resources. SMF will land on one cluster with available resources. One instance of SMF should be running on one of the clusters with sufficient resources.
+
+Policy Template coming soon.
+
+#### Stretched scheduling
+
+Schedule each tier of SMF on a different cluster. For example, schedule 1 unit of front end on workload cluster 1, 1 unit of app tier on workload cluster 2, 1 unit of database on workload cluster 2.
+
+Policy Template coming soon.
