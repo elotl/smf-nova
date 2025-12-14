@@ -1,0 +1,27 @@
+apiVersion: policy.elotl.co/v1alpha1
+kind: SchedulePolicy
+metadata:
+  name: all-in-ns-policy
+spec:
+
+  # matches all resources in namespace ${SMF_NAMESPACE_1}
+  namespaceSelector:
+     matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values:
+          - ${SMF_NAMESPACE_1}
+
+  # matches all resource types
+  resourceSelectors:
+    labelSelectors:
+    - matchExpressions: []
+
+
+  # matches cluster with labels in the list
+  clusterSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: ${NOVA_WORKLOAD_CLUSTER_1}
+  groupBy:
+    labelKey: app.kubernetes.io/component
+
