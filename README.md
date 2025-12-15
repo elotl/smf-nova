@@ -29,9 +29,9 @@ kubectl --context=${K8S_CLUSTER_CONTEXT_1} get ns
 kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
 ```
 
-### Step 1: Schedule SMF to a single workload cluster
+### Step 1, Option 1: Schedule SMF to a single workload cluster
 
-Schedule SMF to ${NOVA_WORKLOAD_CLUSTER_1}.
+Schedule SMF to ${NOVA_WORKLOAD_CLUSTER_1} using a simple policy that expects SMF Objects to be labelled. If you wish to not label SMF Objects, please check out `Step 1, Option 2` below.
 
 #### Create a simple Schedule Policy
 
@@ -73,6 +73,29 @@ kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label role ${SMF_ROLE} app.kubern
 kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label rolebinding ${SMF_ROLEBINDING} app.kubernetes.io/component=smf
 ...
 ```
+
+### Step 1, Option 2: Schedule SMF to a single workload cluster
+
+Schedule SMF to ${NOVA_WORKLOAD_CLUSTER_1} using a simple schedule policy that targets all Objects in a given Namespace.
+
+#### Create a simple Schedule Policy
+
+```
+envsubst < ${SMF_REPO_ROOT}/policies/all-in-ns-policy.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
+```
+
+You should see the new schedule policy `all-in-ns-policy` in Nova.
+```
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
+```
+
+#### Schedule SMF to Nova
+
+Send SMF Helm chart to Nova.
+```
+helm install --kube-context ${NOVA_CONTROLPLANE_CONTEXT} ...
+```
+
 
 ### Step 2: Verify SMF is scheduled to the target workload cluster
 
