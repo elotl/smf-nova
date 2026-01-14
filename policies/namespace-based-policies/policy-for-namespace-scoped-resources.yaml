@@ -3,16 +3,22 @@ kind: SchedulePolicy
 metadata:
   name: policy-ns-resources
 spec:
+
+  # matches all resources in namespace ${SMF_NAMESPACE_1}
   namespaceSelector:
-    matchExpressions:
-    - key: kubernetes.io/metadata.name
-      operator: Exists
+     matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values:
+          - ${SMF_NAMESPACE_1}
+
+  # matches all resources irrespective of their labels
   resourceSelectors:
     labelSelectors:
-    - matchLabels:
-        app.kubernetes.io/component: smf
+    - matchExpressions: []
+
+
+  # chosen target cluster has below label
   clusterSelector:
     matchLabels:
       kubernetes.io/metadata.name: ${NOVA_WORKLOAD_CLUSTER_1}
-  groupBy:
-    labelKey: app.kubernetes.io/component
