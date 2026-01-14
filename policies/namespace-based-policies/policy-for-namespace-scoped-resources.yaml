@@ -18,7 +18,11 @@ spec:
     - matchExpressions: []
 
 
-  # chosen target cluster has below label
+  # chosen target cluster should have labels listed below
   clusterSelector:
     matchLabels:
       kubernetes.io/metadata.name: ${NOVA_WORKLOAD_CLUSTER_1}
+
+  groupBy:
+    labelKey: app.kubernetes.io/component
+
