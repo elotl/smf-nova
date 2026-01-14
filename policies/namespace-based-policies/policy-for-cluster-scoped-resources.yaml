@@ -9,7 +9,7 @@ spec:
   resourceSelectors:
     labelSelectors:
     - matchLabels:
-        app: smf-cs-resources
+        app.kubernetes.io/component: smf-cs-resources
   namespaceSelector:
     matchExpressions:
     - key: kubernetes.io/metadata.name

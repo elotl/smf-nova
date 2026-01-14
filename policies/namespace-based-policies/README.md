@@ -38,9 +38,9 @@ helm install <smf-helm-chart>
 Label only cluster-scoped objects in the SMF app with `app: smf-cs-resources`.
 This includes resources such as such as clusterroles, clusterrolebindings, CustomResourceDefinitions, etc.
 ```
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label crd ${SMF_CRD} app.kubernetes.io/component=smf
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label clusterrole ${SMF_CLUSTERROLE} app.kubernetes.io/component=smf
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label clusterrolebinding ${SMF_CLUSTERROLEBINDING} app.kubernetes.io/component=smf
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label crd ${SMF_CRD} app.kubernetes.io/component=smf-cs-resources
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label clusterrole ${SMF_CLUSTERROLE} app.kubernetes.io/component=smf-cs-resources
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} label clusterrolebinding ${SMF_CLUSTERROLEBINDING} app.kubernetes.io/component=smf-cs-resources
 ...
 ```
 
