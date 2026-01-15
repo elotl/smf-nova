@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: ${SMF_NAMESPACE_1}
   labels:
-    app: smfnamespace
+    app: smf-cs-resources
