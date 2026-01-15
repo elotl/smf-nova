@@ -25,5 +25,6 @@ spec:
 
   # all kubernetes objects with the same value for this label will be grouped
   # and placed together on the same workload cluster
+  # this can be updated with a pre-existing label in the SMF namespaced-objects
   # groupBy:
   #   labelKey: app.kubernetes.io/component
