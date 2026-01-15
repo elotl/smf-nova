@@ -6,12 +6,12 @@ All cluster-scoped resources in the SMF app, will need to be placed using a labe
 
 ## 1. Create Nova Schedule policies
 
-Set environment variable SMF_REPO_ROOT to the root of this repo.
+Set environment variable `SMF_REPO_ROOT` to the root of this repo.
 ```
 export SMF_REPO_ROOT=$HOME/github.com/elotl/smf-nova
 ```
 
-Set environment variable SMF_NAMESPACE_1 to namespace associated with SMF application.
+Set environment variable `SMF_NAMESPACE_1` to the namespace in which to run the SMF application.
 ```
 export SMF_NAMESPACE_1=smf-namespace1
 ```
