@@ -1,7 +1,7 @@
 # Deploying SMF using a namespace-based policy
 
 Using this README all namespace-scoped resources in the SMF app will be placed using a namespace-based policy.
-All cluster-scoped resources in the SMD app, will need to be placed using a label-based policy. Using labels is necessart since we need a way to identify or mark Kubernetes objects that belong to the SMF app (that will then be scheduled by Nova).
+All cluster-scoped resources in the SMF app, will need to be placed using a label-based policy. Using labels is necessary since we need a way to identify (or mark) cluster-scoped Kubernetes objects that belong to the SMF app that will need to be scheduled by Nova.
 
 
 ## 1. Create Nova Schedule policies

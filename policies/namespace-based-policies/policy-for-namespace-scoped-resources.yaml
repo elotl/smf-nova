@@ -25,4 +25,3 @@ spec:
 
   groupBy:
     labelKey: app.kubernetes.io/component
-

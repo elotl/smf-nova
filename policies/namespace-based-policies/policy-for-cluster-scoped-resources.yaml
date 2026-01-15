@@ -6,10 +6,12 @@ spec:
   spreadConstraints:
     spreadMode: Duplicate
     topologyKey: kubernetes.io/metadata.name
+
+  # policy matches all resources with the following label
   resourceSelectors:
     labelSelectors:
     - matchLabels:
-        app.kubernetes.io/component: smf-cs-resources
+        app: smf-cs-resources
   namespaceSelector:
     matchExpressions:
     - key: kubernetes.io/metadata.name
