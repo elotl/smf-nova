@@ -18,12 +18,12 @@ spec:
     - matchExpressions: []
 
 
-  # chosen target cluster should have labels listed below
+  # target cluster on which matching workloads will be placed
   clusterSelector:
     matchLabels:
       kubernetes.io/metadata.name: ${NOVA_WORKLOAD_CLUSTER_1}
 
-  # all kubernetes objects with the same value for this label will grouped
+  # all kubernetes objects with the same value for this label will be grouped
   # and placed together on the same workload cluster
-  groupBy:
-    labelKey: app.kubernetes.io/component
+  # groupBy:
+  #   labelKey: app.kubernetes.io/component
