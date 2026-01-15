@@ -23,5 +23,7 @@ spec:
     matchLabels:
       kubernetes.io/metadata.name: ${NOVA_WORKLOAD_CLUSTER_1}
 
+  # all kubernetes objects with the same value for this label will grouped
+  # and placed together on the same workload cluster
   groupBy:
     labelKey: app.kubernetes.io/component

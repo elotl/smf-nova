@@ -6,24 +6,36 @@ All cluster-scoped resources in the SMF app, will need to be placed using a labe
 
 ## 1. Create Nova Schedule policies
 
+Set environment variable SMF_REPO_ROOT to the root of this repo.
+```
+export SMF_REPO_ROOT=$HOME/github.com/elotl/smf-nova
+```
+
+Set environment variable SMF_NAMESPACE_1 to namespace associated with SMF application.
+```
+export SMF_NAMESPACE_1=smf-namespace1
+```
+
 ### Create a policy for cluster-scoped resources
 
 ```
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/namespace-based-policies/policy-for-cluster-scoped-resources.yaml
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ${SMF_REPO_ROOT}/policies/namespace-based-policies/policy-for-cluster-scoped-resources.yaml
 ```
+Cluster-scoped resources will be placed via a spread policy on all workload clusters.
 
 ### Create a policy for namespace-scoped resources
 
 ```
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/namespace-based-policies/policy-for-cluster-scoped-resources.yaml
+envsubst < ${SMF_REPO_ROOT}/policies/namespace-based-policies/policy-for-namespace-scoped-resources.yaml  | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
 ```
+Namespace-scoped resources will be placed via a specific-cluster policy on one workload cluster.
 
 ## 2. Create the namespace for SMF 
 
 ```
 envsubst < ${SMF_REPO_ROOT}/manifests/smf_namespace.yaml  | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
 ```
-The namespace's name is defined by the env variable: `${SMF_NAMESPACE_1}`
+The namespace's name is defined by the env variable: `${SMF_NAMESPACE_1}`. Ensure that this env variable is defined.
 
 ## 3. Install the SMF helm chart 
 
