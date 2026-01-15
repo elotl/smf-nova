@@ -1,0 +1,30 @@
+apiVersion: policy.elotl.co/v1alpha1
+kind: SchedulePolicy
+metadata:
+  name: policy-ns-resources
+spec:
+
+  # matches all resources in namespace ${SMF_NAMESPACE_1}
+  namespaceSelector:
+     matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values:
+          - ${SMF_NAMESPACE_1}
+
+  # matches all resources irrespective of their labels
+  resourceSelectors:
+    labelSelectors:
+    - matchExpressions: []
+
+
+  # target cluster on which matching workloads will be placed
+  clusterSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: ${NOVA_WORKLOAD_CLUSTER_1}
+
+  # all kubernetes objects with the same value for this label will be grouped
+  # and placed together on the same workload cluster
+  # this can be updated with a pre-existing label in the SMF namespaced-objects
+  # groupBy:
+  #   labelKey: app.kubernetes.io/component
