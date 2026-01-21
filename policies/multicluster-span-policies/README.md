@@ -4,7 +4,7 @@
 ## Prerequisites
 
 1. Cilium Cluster Mesh installed on both Nova workload clusters
-2. Nova installed with `multi-cluster-capacity` option. If Nova is already installed, then the Nova scheduler deployment can be editted  on the Nova control plane to add this option.
+2. Nova installed with `multi-cluster-capacity` option. If Nova is already installed, then the Nova scheduler deployment can be edited  on the Nova control plane to add this option.
 
 ```
 kubectl --context ${NOVA_HOSTINGCLUSTER_CONTEXT} edit deploy nova-scheduler  -n elotl
@@ -16,7 +16,7 @@ The nova-scheduler manifest with the added flags will look like this:
       containers:
       - args:
         - -c
-        - cp /etc/nova-config/kubeconfig /etc/nova/kubeconfig && /nova-scheduler --v=3
+        - cp /etc/nova-config/kubeconfig /etc/nova/kubeconfig && /nova-scheduler --v=5
           --rbac-controller-enabled --luna-management-enabled --multi-cluster-capacity
         command:
 ```
@@ -56,40 +56,98 @@ Set env var `NOVA_CONTROLPLANE_CONTEXT` to the context of the Nova hosting clust
 export NOVA_CONTROLPLANE_CONTEXT=nova
 ```
 
+Set env variables to access the workload cluster context names:
+
+```
+export K8S_CLUSTER_CONTEXT_1=selvik-12232
+export K8S_CLUSTER_CONTEXT_2=selvik-30337
+```
+
 ### Create Namespace policy.
 
 ```
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/multicluster-span-policies/smf-namespace-policy.yaml
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ${SMF_REPO_ROOT}/policies/multicluster-span-policies/smf-namespace-policy.yaml
 ```
 
-Create the `smf` mamespace.
+Verify that the policy was created:
+
 ```
-envsubst < ${SMF_REPO_ROOT}/deploy-scripts/namespace.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
+% kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
+NAME            AGE
+smf-ns-policy   24s
 ```
 
-Verify Namespace has been Duplicated to all the workload clusters.
+Create the `smf` namespace.
+```
+envsubst < ${SMF_REPO_ROOT}/policies/multicluster-span-policies/smf-namespace.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
+```
+
+Verify Namespace has been duplicated to all the workload clusters.
 ```
 kubectl --context=${K8S_CLUSTER_CONTEXT_1} get ns
 kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
 ```
 
+```
+% kubectl --context=${K8S_CLUSTER_CONTEXT_1} get ns
+NAME                                             STATUS   AGE
+...
+smf-namespace1                                   Active   1s
+
+% kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
+NAME                                             STATUS   AGE
+...
+smf-namespace1                                   Active   4s
+```
+
 ### Schedule policy for SMF components on the primary-cluster
 
 All Kubernetes resources of the SMF app that are to be deployed on the primary workload cluster will be placed using a label-based 
-specific-cluster policy. The folowing policy matches all resources with the label: `app: primary`. 
+specific-cluster policy. The following policy matches all resources with the label: `app: primary`. 
 
 ```
 envsubst < ${SMF_REPO_ROOT}/policies/multicluster-span-policies/smf-primary-policy.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
 ```
 
-### Schedule policy for SMF Deployment that will span mulitple clusters
+Verify that the policy was created:
+```
+% kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
+NAME                 AGE
+smf-ns-policy        3m55s
+smf-primary-policy   4s
+```
+
+### Schedule policy for SMF Deployment that will span multiple clusters
 
 The Kubernetes `deployment` that will span two Nova workload clusters as well as any other dependent objects this deployment needs (secrets, configmaps, etc) will be placed using a Fill-and-Spill Schedule Policy.
 
-This policy matches all resources with the label: `app: span-multiple`. 
+This policy matches all resources with the label: `app: span-multiple`. A `Fill and Spill` policy allows users to place workloads on a list of clusters ordered by **priority**. For the Schedule policy snippet shown below, clusters are listed in the order: cluster-1 and then cluster-2. So workload pods will first be placed on cluster-1 and any pods that cannot be placed on cluster-1 will be placed on cluster-2.
+
+```
+  orderedClusterSelector:
+    matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values: [cluster-1, cluster-2]
+```
+
+The policy uses these env variables whose values correspond to the names that were given during Nova agent install in the workload clusters:
+```
+export NOVA_WORKLOAD_CLUSTER_1=selvik-onprem
+export NOVA_WORKLOAD_CLUSTER_2=selvik-cloud 
+```
 
 ```
 envsubst < ${SMF_REPO_ROOT}/policies/multicluster-span-policies/smf-fill-and-spill-policy.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
+```
+
+Verify that the policy was created:
+```
+% kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
+NAME                        AGE
+smf-fill-and-spill-policy   6m32s
+smf-ns-policy               15m
+smf-primary-policy          12m
 ```
 
 ## 3. Install the SMF helm chart 
