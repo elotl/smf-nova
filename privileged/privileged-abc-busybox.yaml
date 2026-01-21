@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: privileged-demo
+  namespace: abc
+  labels:
+      app: priv-pod
+spec:
+  containers:
+  - name: privileged-container
+    image: busybox:latest
+    command: ["sleep", "infinity"]
+    securityContext:
+      privileged: true
+
