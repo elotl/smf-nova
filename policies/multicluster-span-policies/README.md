@@ -3,7 +3,7 @@
 
 ## Prerequisites
 
-1. Cilium Cluster Mesh installed on both Nova workload clusters, configured for connectivity between the clusters."
+1. Cilium Cluster Mesh installed on both Nova workload clusters, configured for connectivity between the clusters.
 2. Nova installed with `multi-cluster-capacity` option. If Nova is already installed, then the Nova scheduler deployment can be edited  on the Nova control plane to add this option.
 
 ```
