@@ -33,9 +33,12 @@ This is what it will look like:
         - --enable-bootstrap-token-auth=true
 ```
 
-## Example Privileged pod creation
+## Example Privileged Pod and Policy Creation
+
 
 ### Create schedule policy
+
+We first create the Nova Schedule Policy:
 
 ```
 % kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f policy-for-privileged-pod.yaml 
@@ -47,6 +50,8 @@ policy-priv-pod   4s
 ```
 
 ### Create namespace
+
+Next, we create the namespace needed for the privileged pod:
 
 ```
 % kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f abc-namespace.yaml
@@ -64,6 +69,8 @@ abc                                              Active   77s
 
 
 ### Create privileged pods
+
+Finally, we create a sample privileged pod and check that it is scheduled successfully on both Nova workload clusters:
 
 
 ```
