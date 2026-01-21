@@ -25,13 +25,13 @@ The nova-scheduler manifest with the added flags will look like this:
 ## 1. Schedule Policy Creation
 
 
-Before installing a new SMF instance, delete any stale workloads and policies. Prior schedule policie can be viewed as follows:.
+Before installing a new SMF instance, delete any stale workloads and policies. Prior schedule policies can be viewed as follows:
 
 ```
 kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 ```
 
-If there are any previously scheduled workloads delete them too.
+If there are any previously scheduled SMF workloads delete them too.
 
 
 ### Setup Environment Variables
