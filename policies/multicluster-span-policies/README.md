@@ -183,11 +183,13 @@ A Kubernetes `Service` can be converted to a `Global Service` by including the f
 You can read more about Global Services here: (Cilium Load Balancing with Global Services)[https://docs.cilium.io/en/stable/network/clustermesh/services/#load-balancing-with-global-services]
 
 
-Edit the 	Services associated with the deployment to be spanned and add the above annotation.
+Edit the Services associated with the deployment to be spanned and add the above annotation.
 
 ```
 kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit service -n ${SMF_NAMESPACE_1} <smf-deployment-service> 
 ```
+
+Also update any other services that would need to be accessed from both clusters.
 
 ## 4. Verify Application deployment
 
@@ -196,7 +198,3 @@ kubectl --context=${K8S_CLUSTER_CONTEXT_1} get pods -n ${SMF_NAMESPACE_1}
 kubectl --context=${K8S_CLUSTER_CONTEXT_2} get pods -n ${SMF_NAMESPACE_1}
 ```
 
-## 5. Retail Store Example
-
-A three-tier retail store app can be deployed using the policies in this folder. The manifests for the retail-store app are provided in the sub-folder `example-retail-store`.
- 
