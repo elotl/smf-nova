@@ -1,0 +1,25 @@
+apiVersion: policy.elotl.co/v1alpha1
+kind: SchedulePolicy
+metadata:
+  name: smf-fill-and-spill-policy
+spec:
+
+  # this section prioritizes workload clusters in the order listed below
+  orderedClusterSelector:
+    matchExpressions:
+      - key: kubernetes.io/metadata.name
+        operator: In
+        values: [${NOVA_WORKLOAD_CLUSTER_1}, ${NOVA_WORKLOAD_CLUSTER_2}]
+
+  # this policy matches those resources that have the listed key value pair
+  resourceSelectors:
+    labelSelectors:
+    - matchLabels:
+        app: span-multiple
+
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: Exists
+  groupBy:
+    labelKey: app
