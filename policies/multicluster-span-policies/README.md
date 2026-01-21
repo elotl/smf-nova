@@ -63,7 +63,12 @@ export K8S_CLUSTER_CONTEXT_1=selvik-12232
 export K8S_CLUSTER_CONTEXT_2=selvik-30337
 ```
 
-### Create Namespace policy.
+### Create Spread Policy 
+
+This Spread policy will be used for resources that are needed on both clusters. This will include:
+
+1) Namespace: The namespace within which all Application components will be placed on both clusters.
+2) Configmaps, Secrets, ServiceAccounts, Services, etc: All resources that will be needed by the deployment that will span both clusters as well as the workloads that will remain on the primary cluster.
 
 ```
 kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ${SMF_REPO_ROOT}/policies/multicluster-span-policies/smf-namespace-policy.yaml
@@ -82,7 +87,7 @@ Create the `smf` namespace.
 envsubst < ${SMF_REPO_ROOT}/policies/multicluster-span-policies/smf-namespace.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
 ```
 
-Verify Namespace has been duplicated to all the workload clusters.
+Verify that the namespace has been duplicated to all the workload clusters.
 ```
 kubectl --context=${K8S_CLUSTER_CONTEXT_1} get ns
 kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
@@ -160,14 +165,16 @@ helm install --kube-context ${NOVA_CONTROLPLANE_CONTEXT} ...
 
 We add the following labels to ensure the objects are placed as intended:
 
-1. Add label `app: primary` to all resources except the Deployment (and its corresponding) that will need to span across two clusters.
-2. Add label `app: span-multiple` to the Deployment that will need to span across two workload clusters.
-3. Add label `app: smf-spread` to the Service of the Deployment that will need to span across two clusters.
+1. Add label `app: primary` to all the resources that need to be on the primary-cluster only. 
+2. Add label `app: smf-spread` to the common Kubernetes objects that will be needed by workloads on the primary cluster as well as the Deployment that will span across the two clusters.
+3. Add label `app: span-multiple` to the Deployment that will need to span across two workload clusters.
 
 
 ## Update App configuration for Cilium Cluster Mesh.
 
-When Cilium Cluster Mesh is used, services whose pods may span multiple clusters are expected to include the following annotation to make it a `Global Service`.
+When Cilium Cluster Mesh is used, services whose pods span multiple clusters as well as Services that need to be accessed from the other clusters should be made a Global Service.
+
+A Kubernetes `Service` can be converted to a `Global Service` by including the following annotation:
 
 ```
  service.cilium.io/global: "true".
@@ -176,7 +183,7 @@ When Cilium Cluster Mesh is used, services whose pods may span multiple clusters
 You can read more about Global Services here: (Cilium Load Balancing with Global Services)[https://docs.cilium.io/en/stable/network/clustermesh/services/#load-balancing-with-global-services]
 
 
-Edit the service associated with the deployment to be spanned and add the above annotation.
+Edit the 	Services associated with the deployment to be spanned and add the above annotation.
 
 ```
 kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit service -n ${SMF_NAMESPACE_1} <smf-deployment-service> 
@@ -185,7 +192,11 @@ kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit service -n ${SMF_NAMESPACE_1
 ## 4. Verify Application deployment
 
 ```
-kubectl --context=${K8S_CLUSTER_CONTEXT_1} get all -n ${SMF_NAMESPACE_1}
-kubectl --context=${K8S_CLUSTER_CONTEXT_2} get all -n ${SMF_NAMESPACE_1}
+kubectl --context=${K8S_CLUSTER_CONTEXT_1} get pods -n ${SMF_NAMESPACE_1}
+kubectl --context=${K8S_CLUSTER_CONTEXT_2} get pods -n ${SMF_NAMESPACE_1}
 ```
 
+## 5. Retail Store Example
+
+A three-tier retail store app can be deployed using the policies in this folder. The manifests for the retail-store app are provided in the sub-folder `example-retail-store`.
+ 
