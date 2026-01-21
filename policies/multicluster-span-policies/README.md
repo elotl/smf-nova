@@ -4,7 +4,7 @@
 ## Prerequisites
 
 1. Cilium Cluster Mesh installed on both Nova workload clusters
-2. Nova installed with `multi-cluster-capacity` option: If Nova is already installed, then the Nova scheduler deployment can be editted  on the Nova control plane to add this option.
+2. Nova installed with `multi-cluster-capacity` option. If Nova is already installed, then the Nova scheduler deployment can be editted  on the Nova control plane to add this option.
 
 ```
 kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit nova-scheduler -n elotl 
@@ -16,13 +16,14 @@ The nova-scheduler manifest with the added flags will look like this:
 ## 1. Schedule Policy Creation
 
 
-Before installing a new SMF instance, delete any stale workloads and policies. Prior schedule policies, you can list them as follows and delete them.
+Before installing a new SMF instance, delete any stale workloads and policies. Prior schedule policie can be viewed as follows:.
 
 ```
 kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 ```
 
-If there are any previously scheduled workloads delete them.
+If there are any previously scheduled workloads delete them too.
+
 
 ### Setup Environment Variables.
 
@@ -39,7 +40,7 @@ export SMF_NAMESPACE_1=smf-namespace1
 ### Create Namespace policy.
 
 ```
-kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/multicluster-span-policies/namespace-policy.yaml
+kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f ./policies/multicluster-span-policies/smf-namespace-policy.yaml
 ```
 
 Create the `smf` mamespace.
@@ -64,7 +65,7 @@ envsubst < ${SMF_REPO_ROOT}/policies/multicluster-span-policies/smf-primary-poli
 
 ### Schedule policy for SMF Deployment that will span mulitple clusters
 
-The Kubernetes `deployment` that will span two Nova workload clusters will be placed using a Fill-and-Spill Schedule Policy.
+The Kubernetes `deployment` that will span two Nova workload clusters as well as any other dependent objects this deployment needs (secrets, configmaps, etc) will be placed using a Fill-and-Spill Schedule Policy.
 
 This policy matches all resources with the label: `app: span-multiple`. 
 
@@ -89,22 +90,25 @@ We add the following labels to ensure the objects are placed as intended:
 
 ## Update App configuration for Cilium Cluster Mesh.
 
-When Cilium Cluster Mesh is used, services whose pods may span multiple clusters are expected to include the following annotation:
+When Cilium Cluster Mesh is used, services whose pods may span multiple clusters are expected to include the following annotation to make it a `Global Service`.
 
 ```
  service.cilium.io/global: "true".
 ```
 
-Edit the service and add the above annotation.
+You can read more about Global Services here: (Cilium Load Balancing with Global Services)[https://docs.cilium.io/en/stable/network/clustermesh/services/#load-balancing-with-global-services]
+
+
+Edit the service associated with the deployment to be spanned and add the above annotation.
 
 ```
-kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit service <smf-deployment-service> 
+kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit service -n ${SMF_NAMESPACE_1} <smf-deployment-service> 
 ```
 
 ## 4. Verify Application deployment
 
 ```
-kubectl --context=${K8S_CLUSTER_CONTEXT_1} get all -n smf-namespace1
-kubectl --context=${K8S_CLUSTER_CONTEXT_2} get ns
+kubectl --context=${K8S_CLUSTER_CONTEXT_1} get all -n ${SMF_NAMESPACE_1}
+kubectl --context=${K8S_CLUSTER_CONTEXT_2} get all -n ${SMF_NAMESPACE_1}
 ```
 
