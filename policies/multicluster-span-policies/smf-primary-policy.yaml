@@ -1,0 +1,22 @@
+apiVersion: policy.elotl.co/v1alpha1
+kind: SchedulePolicy
+metadata:
+  name: smf-primary-policy
+spec:
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: Exists
+
+  # this policy matches all resources with the following label
+  resourceSelectors:
+    labelSelectors:
+    - matchLabels:
+        app: smf-primary
+
+  # target cluster on which matching workloads will be placed
+  clusterSelector:
+    matchLabels:
+      kubernetes.io/metadata.name: ${NOVA_WORKLOAD_CLUSTER_1}
+  groupBy:
+    labelKey: app
