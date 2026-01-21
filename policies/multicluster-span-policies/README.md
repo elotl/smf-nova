@@ -34,7 +34,7 @@ kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 If there are any previously scheduled SMF workloads delete them too.
 
 
-### Setup Environment Variables
+### A. Setup Environment Variables
 
 Set environment variable `SMF_REPO_ROOT` to the root of this repo.
 ```
@@ -63,7 +63,7 @@ export K8S_CLUSTER_CONTEXT_1=selvik-12232
 export K8S_CLUSTER_CONTEXT_2=selvik-30337
 ```
 
-### Create Spread Policy 
+### B. Create Spread Policy 
 
 This Spread policy will be used for resources that are needed on both clusters. This will include:
 
@@ -105,7 +105,7 @@ NAME                                             STATUS   AGE
 smf-namespace1                                   Active   4s
 ```
 
-### Schedule policy for SMF components on the primary-cluster
+### C. Schedule policy for SMF components on the primary-cluster
 
 All Kubernetes resources of the SMF app that are to be deployed on the primary workload cluster will be placed using a label-based 
 specific-cluster policy. The following policy matches all resources with the label: `app: primary`. 
@@ -122,7 +122,7 @@ smf-ns-policy        3m55s
 smf-primary-policy   4s
 ```
 
-### Schedule policy for the SMF Deployment that will span multiple clusters
+### D. Schedule policy for the SMF Deployment that will span multiple clusters
 
 The Kubernetes `deployment` that will span two Nova workload clusters will be placed using a `Fill-and-Spill` Schedule Policy.
 
@@ -155,13 +155,13 @@ smf-ns-policy               15m
 smf-primary-policy          12m
 ```
 
-## 3. Install the SMF helm chart 
+## 2. Install the SMF helm chart 
 
 ```
 helm install --kube-context ${NOVA_CONTROLPLANE_CONTEXT} ...
 ```
 
-## 4. Adding necessary labels
+## 3. Adding necessary labels
 
 We add the following labels to ensure the objects are placed as intended:
 
@@ -170,7 +170,7 @@ We add the following labels to ensure the objects are placed as intended:
 3. Add label `app: span-multiple` to the Deployment that will need to span across two workload clusters.
 
 
-## Update App configuration for Cilium Cluster Mesh.
+## 4. Update App configuration for Cilium Cluster Mesh.
 
 When Cilium Cluster Mesh is used, services whose pods span multiple clusters as well as Services that need to be accessed from the other clusters should be made a Global Service.
 
@@ -191,7 +191,7 @@ kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit service -n ${SMF_NAMESPACE_1
 
 Also update any other services that would need to be accessed from both clusters.
 
-## 4. Verify Application deployment
+## 5. Verify Application deployment
 
 ```
 kubectl --context=${K8S_CLUSTER_CONTEXT_1} get pods -n ${SMF_NAMESPACE_1}
