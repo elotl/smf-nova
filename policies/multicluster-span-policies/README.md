@@ -3,7 +3,7 @@
 
 ## Prerequisites
 
-1. Cilium Cluster Mesh installed on both Nova workload clusters
+1. Cilium Cluster Mesh installed on both Nova workload clusters, configured for connectivity between the clusters."
 2. Nova installed with `multi-cluster-capacity` option. If Nova is already installed, then the Nova scheduler deployment can be edited  on the Nova control plane to add this option.
 
 ```
@@ -16,7 +16,7 @@ The nova-scheduler manifest with the added flags will look like this:
       containers:
       - args:
         - -c
-        - cp /etc/nova-config/kubeconfig /etc/nova/kubeconfig && /nova-scheduler --v=5
+        - cp /etc/nova-config/kubeconfig /etc/nova/kubeconfig && /nova-scheduler --v=3
           --rbac-controller-enabled --luna-management-enabled --multi-cluster-capacity
         command:
 ```
@@ -122,9 +122,9 @@ smf-ns-policy        3m55s
 smf-primary-policy   4s
 ```
 
-### Schedule policy for SMF Deployment that will span multiple clusters
+### Schedule policy for the SMF Deployment that will span multiple clusters
 
-The Kubernetes `deployment` that will span two Nova workload clusters as well as any other dependent objects this deployment needs (secrets, configmaps, etc) will be placed using a Fill-and-Spill Schedule Policy.
+The Kubernetes `deployment` that will span two Nova workload clusters will be placed using a `Fill-and-Spill` Schedule Policy.
 
 This policy matches all resources with the label: `app: span-multiple`. A `Fill and Spill` policy allows users to place workloads on a list of clusters ordered by **priority**. For the Schedule policy snippet shown below, clusters are listed in the order: cluster-1 and then cluster-2. So workload pods will first be placed on cluster-1 and any pods that cannot be placed on cluster-1 will be placed on cluster-2.
 
