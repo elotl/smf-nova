@@ -4,14 +4,10 @@
 ## Prerequisites
 
 1. Cilium Cluster Mesh installed on both Nova workload clusters
-
-
-## Install Nova with `multi-cluster-capacity` option
-
-If Nova is already installed, then you can edit the Nova scheduler deployment on the Nova control plane and add this option.
+2. Nova installed with `multi-cluster-capacity` option: If Nova is already installed, then the Nova scheduler deployment can be editted  on the Nova control plane to add this option.
 
 ```
-kubectl --context ${} edit nova-scheduler -n elotl 
+kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit nova-scheduler -n elotl 
 ```
 
 The nova-scheduler manifest with the added flags will look like this:
@@ -19,13 +15,11 @@ The nova-scheduler manifest with the added flags will look like this:
 
 ## 1. Schedule Policy Creation
 
-### Clean up any stale workloads and policies
 
-
-If there are prior schedule policies, you can list them as follows and delete them.
+Before installing a new SMF instance, delete any stale workloads and policies. Prior schedule policies, you can list them as follows and delete them.
 
 ```
-kubectl --context ${NOVA_CONTROL_PLANE} get schedulepolicies
+kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 ```
 
 If there are any previously scheduled workloads delete them.
