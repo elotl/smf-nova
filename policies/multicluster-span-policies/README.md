@@ -7,10 +7,19 @@
 2. Nova installed with `multi-cluster-capacity` option. If Nova is already installed, then the Nova scheduler deployment can be editted  on the Nova control plane to add this option.
 
 ```
-kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} edit nova-scheduler -n elotl 
+kubectl --context ${NOVA_HOSTINGCLUSTER_CONTEXT} edit deploy nova-scheduler  -n elotl
 ```
 
 The nova-scheduler manifest with the added flags will look like this:
+```
+    spec:
+      containers:
+      - args:
+        - -c
+        - cp /etc/nova-config/kubeconfig /etc/nova/kubeconfig && /nova-scheduler --v=3
+          --rbac-controller-enabled --luna-management-enabled --multi-cluster-capacity
+        command:
+```
 
 
 ## 1. Schedule Policy Creation
@@ -25,7 +34,7 @@ kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies
 If there are any previously scheduled workloads delete them too.
 
 
-### Setup Environment Variables.
+### Setup Environment Variables
 
 Set environment variable `SMF_REPO_ROOT` to the root of this repo.
 ```
@@ -35,6 +44,16 @@ export SMF_REPO_ROOT=$HOME/github.com/elotl/smf-nova
 Set environment variable `SMF_NAMESPACE_1` to the namespace in which to run the SMF application.
 ```
 export SMF_NAMESPACE_1=smf-namespace1
+```
+
+Set env var `NOVA_HOSTINGCLUSTER_CONTEXT` to the context of the Nova hosting cluster.
+```
+export NOVA_HOSTINGCLUSTER_CONTEXT=selvi-nova
+```
+
+Set env var `NOVA_CONTROLPLANE_CONTEXT` to the context of the Nova hosting cluster.
+```
+export NOVA_CONTROLPLANE_CONTEXT=nova
 ```
 
 ### Create Namespace policy.
