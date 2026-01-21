@@ -87,4 +87,12 @@ privileged-demo   1/1     Running   0          10s
 ```
 
 
+## Appendix
+
+Without the API server configuration `--allow-privileged=true`, Nova Control Plane will not be able to run this privileged pod and will display this error:
+
+```
+% kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f privileged-abc-busybox.yaml
+The Pod "privileged-demo" is invalid: spec.containers[0].securityContext.privileged: Forbidden: disallowed by cluster policy
+```
 
