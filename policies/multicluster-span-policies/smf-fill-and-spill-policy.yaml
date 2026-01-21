@@ -9,9 +9,9 @@ spec:
     matchExpressions:
       - key: kubernetes.io/metadata.name
         operator: In
-        values: [selvi-onprem, selvi-cloud]
+        values: [${NOVA_WORKLOAD_CLUSTER_1}, ${NOVA_WORKLOAD_CLUSTER_2}]
 
-  # this policy matches those resources that have this label' key value pair
+  # this policy matches those resources that have the listed key value pair
   resourceSelectors:
     labelSelectors:
     - matchLabels:

@@ -22,7 +22,7 @@ The nova-scheduler manifest with the added flags will look like this:
 ### Clean up any stale workloads and policies
 
 
-If there are prior schedule policies, list them and delete them.
+If there are prior schedule policies, you can list them as follows and delete them.
 
 ```
 kubectl --context ${NOVA_CONTROL_PLANE} get schedulepolicies
@@ -30,7 +30,7 @@ kubectl --context ${NOVA_CONTROL_PLANE} get schedulepolicies
 
 If there are any previously scheduled workloads delete them.
 
-### Setup needed environment variables.
+### Setup Environment Variables.
 
 Set environment variable `SMF_REPO_ROOT` to the root of this repo.
 ```
