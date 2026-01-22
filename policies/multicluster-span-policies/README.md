@@ -177,7 +177,7 @@ When Cilium Cluster Mesh is used, services whose pods span multiple clusters as 
 A Kubernetes `Service` can be converted to a `Global Service` by including the following annotation:
 
 ```
- service.cilium.io/global: "true".
+ service.cilium.io/global: "true"
 ```
 
 You can read more about Global Services here: (Cilium Load Balancing with Global Services)[https://docs.cilium.io/en/stable/network/clustermesh/services/#load-balancing-with-global-services]
