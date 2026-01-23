@@ -155,6 +155,25 @@ smf-ns-policy               15m
 smf-primary-policy          12m
 ```
 
+### E. Spread-Divide Schedule policy for the SMF Deployment that will span multiple clusters
+
+Alternatively, a deployment can be deployed on two workload clusters with its replicas split by a percentage using a `Spread-Divide` policy. 
+This policy  matches all resources with the label: `app: span-multiple`. Please note that this policy is an alternative to the fill-and-spill policy in the prior Section D.
+
+Create the policy as follows:
+```
+envsubst < ${SMF_REPO_ROOT}/policies/multicluster-span-policies/smf-spread-divide-policy.yaml | kubectl --context=${NOVA_CONTROLPLANE_CONTEXT} apply -f -
+```
+
+Verify that the policy was created:
+```
+ % kubectl --context ${NOVA_CONTROLPLANE_CONTEXT} get schedulepolicies          
+NAME                 AGE
+smf-ns-policy        2d3h
+smf-primary-policy   2d3h
+smf-spread-policy    48m
+```
+
 ## 2. Install the SMF helm chart 
 
 ```
