@@ -1,0 +1,27 @@
+apiVersion: policy.elotl.co/v1alpha1
+kind: SchedulePolicy
+metadata:
+  name: smf-spread-policy
+spec:
+
+  spreadConstraints:
+    spreadMode: Divide
+    topologyKey: kubernetes.io/metadata.name
+    percentageSplit:
+      - topologyValue: ${NOVA_WORKLOAD_CLUSTER_1}
+        percentage: 20
+      - topologyValue: ${NOVA_WORKLOAD_CLUSTER_2}
+        percentage: 80
+
+  # this policy matches those resources that have the listed key value pair
+  resourceSelectors:
+    labelSelectors:
+    - matchLabels:
+        app: span-multiple
+
+  namespaceSelector:
+    matchExpressions:
+    - key: kubernetes.io/metadata.name
+      operator: Exists
+  groupBy:
+    labelKey: app
